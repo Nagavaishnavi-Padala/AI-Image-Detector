@@ -661,3 +661,187 @@ footer {
     font-size: 52px;
   }
 }
+
+/* =========================================================
+   ANALYSIS RESULT DASHBOARD
+   ========================================================= */
+
+.analysis-result {
+  width: min(100%, 650px);
+  margin: 30px auto 0;
+}
+
+/* =========================================================
+   SCORE GRID
+   ========================================================= */
+
+.score-grid {
+  display: grid;
+
+  grid-template-columns: 1fr 1fr;
+
+  gap: 14px;
+
+  margin-top: 14px;
+}
+
+.score-card {
+  padding: 22px;
+
+  border: 1px solid #292933;
+  border-radius: 16px;
+
+  background: #101016;
+
+  text-align: left;
+}
+
+.score-card span {
+  display: block;
+
+  margin-bottom: 10px;
+
+  color: #777782;
+
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.score-card strong {
+  font-size: 28px;
+}
+
+/* =========================================================
+   FORENSIC SECTION
+   ========================================================= */
+
+.forensic-section {
+  margin-top: 35px;
+}
+
+.result-section-heading {
+  margin-bottom: 18px;
+
+  text-align: left;
+}
+
+.result-section-heading h3 {
+  margin: 8px 0 0;
+
+  font-size: 20px;
+}
+
+/* =========================================================
+   FEATURE GRID
+   ========================================================= */
+
+.feature-grid {
+  display: grid;
+
+  grid-template-columns: 1fr 1fr;
+
+  gap: 14px;
+}
+
+.feature-card {
+  padding: 20px;
+
+  border: 1px solid #292933;
+  border-radius: 16px;
+
+  background: #101016;
+
+  text-align: left;
+}
+
+.feature-card span {
+  display: block;
+
+  margin-bottom: 12px;
+
+  color: #777782;
+
+  font-size: 12px;
+}
+
+.feature-card strong {
+  font-size: 22px;
+}
+
+/* =========================================================
+   METADATA
+   ========================================================= */
+
+.metadata-section {
+  margin-top: 35px;
+}
+
+.metadata-grid {
+  display: grid;
+
+  gap: 1px;
+
+  overflow: hidden;
+
+  border: 1px solid #292933;
+  border-radius: 16px;
+
+  background: #292933;
+}
+
+.metadata-item {
+  display: flex;
+
+  justify-content: space-between;
+  align-items: center;
+
+  gap: 20px;
+
+  padding: 15px 18px;
+
+  background: #101016;
+}
+
+.metadata-item span {
+  color: #777782;
+
+  font-size: 12px;
+}
+
+.metadata-item strong {
+  max-width: 60%;
+
+  color: #d8d8df;
+
+  font-size: 12px;
+
+  text-align: right;
+
+  word-break: break-word;
+}
+
+/* =========================================================
+   RESULT RESPONSIVE
+   ========================================================= */
+
+@media (max-width: 600px) {
+  .score-grid,
+  .feature-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .metadata-item {
+    align-items: flex-start;
+
+    flex-direction: column;
+
+    gap: 6px;
+  }
+
+  .metadata-item strong {
+    max-width: 100%;
+
+    text-align: left;
+  }
+}
