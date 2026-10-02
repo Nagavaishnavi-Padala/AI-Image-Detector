@@ -247,11 +247,22 @@
 }
 
 .file-types {
-  margin-top: 16px !important;
+  display: block;
+  width: 100%;
+
+  margin: 16px 0 0 !important;
 
   color: #606876 !important;
 
   font-size: 0.72rem !important;
+
+  text-align: center;
+  line-height: 1.5;
+}
+
+.upload-zone .choose-button {
+  display: inline-flex;
+  margin: 0 auto;
 }
 
 /* =========================================================
