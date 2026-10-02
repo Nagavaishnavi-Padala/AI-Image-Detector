@@ -1,122 +1,167 @@
-import { useState } from 'react'
-import heroImg from './assets/hero.png'
-import reactLogo from './assets/react.svg'
-import viteLogo from './assets/vite.svg'
-import './App.css'
+import { useEffect, useState } from "react";
+import "./App.css";
+
+import UploadZone from "./components/upload/UploadZone";
+import ImagePreview from "./components/upload/ImagePreview";
+import { validateImageFile } from "./utils/fileValidation";
 
 function App() {
-  const [count, setCount] = useState(0)
+  const [selectedFile, setSelectedFile] = useState(null);
+  const [previewUrl, setPreviewUrl] = useState(null);
+  const [error, setError] = useState("");
+
+  const handleFileSelected = (file) => {
+    setError("");
+
+    const validation = validateImageFile(file);
+
+    if (!validation.valid) {
+      setSelectedFile(null);
+      setPreviewUrl(null);
+      setError(validation.error);
+      return;
+    }
+
+    setSelectedFile(file);
+
+    const url = URL.createObjectURL(file);
+    setPreviewUrl(url);
+  };
+
+  const handleRemove = () => {
+    setSelectedFile(null);
+    setPreviewUrl(null);
+    setError("");
+  };
+
+  useEffect(() => {
+    return () => {
+      if (previewUrl) {
+        URL.revokeObjectURL(previewUrl);
+      }
+    };
+  }, [previewUrl]);
 
   return (
-    <>
-      <section id="center">
-        <div className="hero">
-          <img src={heroImg} className="base" width="170" height="179" alt="" />
-          <img src={reactLogo} className="framework" alt="React logo" />
-          <img src={viteLogo} className="vite" alt="Vite logo" />
-        </div>
-        <div>
-          <h1>Get started</h1>
-          <p>
-            Edit <code>src/App.jsx</code> and save to test <code>HMR</code>
-          </p>
-        </div>
-        <button
-          type="button"
-          className="counter"
-          onClick={() => setCount((count) => count + 1)}
-        >
-          Count is {count}
-        </button>
-      </section>
+    <div className="app">
+      <header className="navbar">
+        <div className="brand">
+          <div className="brand-icon">AI</div>
 
-      <div className="ticks"></div>
-
-      <section id="next-steps">
-        <div id="docs">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#documentation-icon"></use>
-          </svg>
-          <h2>Documentation</h2>
-          <p>Your questions, answered</p>
-          <ul>
-            <li>
-              <a href="https://vite.dev/" target="_blank">
-                <img className="logo" src={viteLogo} alt="" />
-                Explore Vite
-              </a>
-            </li>
-            <li>
-              <a href="https://react.dev/" target="_blank">
-                <img className="button-icon" src={reactLogo} alt="" />
-                Learn more
-              </a>
-            </li>
-          </ul>
+          <div>
+            <h1>AI Image Forensics</h1>
+            <p>Zero-Shot Image Detection</p>
+          </div>
         </div>
-        <div id="social">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#social-icon"></use>
-          </svg>
-          <h2>Connect with us</h2>
-          <p>Join the Vite community</p>
-          <ul>
-            <li>
-              <a href="https://github.com/vitejs/vite" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#github-icon"></use>
-                </svg>
-                GitHub
-              </a>
-            </li>
-            <li>
-              <a href="https://chat.vite.dev/" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#discord-icon"></use>
-                </svg>
-                Discord
-              </a>
-            </li>
-            <li>
-              <a href="https://x.com/vite_js" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#x-icon"></use>
-                </svg>
-                X.com
-              </a>
-            </li>
-            <li>
-              <a href="https://bsky.app/profile/vite.dev" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#bluesky-icon"></use>
-                </svg>
-                Bluesky
-              </a>
-            </li>
-          </ul>
-        </div>
-      </section>
 
-      <div className="ticks"></div>
-      <section id="spacer"></section>
-    </>
-  )
+        <nav className="nav-links">
+          <a href="#how-it-works">How It Works</a>
+          <a href="#about">About</a>
+        </nav>
+      </header>
+
+      <main>
+        <section className="hero">
+          <div className="hero-content">
+            <span className="eyebrow">
+              ZERO-SHOT AI IMAGE DETECTION
+            </span>
+
+            <h2>
+              Is this image
+              <span> AI-generated?</span>
+            </h2>
+
+            <p className="hero-description">
+              Analyze images for patterns associated with synthetic
+              content — including images generated by models that were
+              never seen during training.
+            </p>
+
+            {!selectedFile ? (
+              <UploadZone
+                onFileSelected={handleFileSelected}
+              />
+            ) : (
+              <ImagePreview
+                file={selectedFile}
+                previewUrl={previewUrl}
+                onRemove={handleRemove}
+              />
+            )}
+
+            {error && (
+              <div className="upload-error">
+                {error}
+              </div>
+            )}
+
+            {selectedFile && (
+              <button
+                type="button"
+                className="analyze-button"
+              >
+                Analyze Image
+              </button>
+            )}
+          </div>
+        </section>
+
+        <section id="how-it-works" className="how-it-works">
+          <div className="section-heading">
+            <span className="eyebrow">HOW IT WORKS</span>
+
+            <h2>From pixels to forensic evidence.</h2>
+
+            <p>
+              The system combines visual representations with
+              image-level forensic signals before performing
+              anomaly detection.
+            </p>
+          </div>
+
+          <div className="pipeline">
+            <div className="pipeline-card">
+              <span>01</span>
+              <h3>Visual Features</h3>
+              <p>
+                Foundation-model representations capture
+                meaningful visual patterns.
+              </p>
+            </div>
+
+            <div className="pipeline-arrow">→</div>
+
+            <div className="pipeline-card">
+              <span>02</span>
+              <h3>Forensic Analysis</h3>
+              <p>
+                Frequency, noise, compression and texture
+                signals are examined.
+              </p>
+            </div>
+
+            <div className="pipeline-arrow">→</div>
+
+            <div className="pipeline-card">
+              <span>03</span>
+              <h3>Anomaly Detection</h3>
+              <p>
+                The combined representation is compared with
+                patterns learned from real images.
+              </p>
+            </div>
+          </div>
+        </section>
+      </main>
+
+      <footer id="about">
+        <p>
+          Zero-Shot AI Image Detector · Research Project
+        </p>
+      </footer>
+    </div>
+  );
 }
 
-export default App
+export default App;
