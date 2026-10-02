@@ -5,6 +5,7 @@ import { useImageAnalysis } from "./hooks/useImageAnalysis";
 
 import AnalysisLoader from "./components/analysis/AnalysisLoader";
 import VerdictCard from "./components/analysis/VerdictCard";
+import ExplainabilityPanel from "./components/analysis/ExplainabilityPanel";
 
 import UploadZone from "./components/upload/UploadZone";
 import ImagePreview from "./components/upload/ImagePreview";
@@ -48,7 +49,7 @@ function App() {
     const url = URL.createObjectURL(file);
     setPreviewUrl(url);
 
-    // Reset any previous analysis
+    // Reset previous analysis
     resetAnalysis();
   };
 
@@ -183,10 +184,23 @@ function App() {
 
                 {loading && <AnalysisLoader />}
 
-                {/* Analysis result */}
+                {/* =================================================
+                    ANALYSIS RESULT
+                    ================================================= */}
 
                 {result && !loading && (
-                  <VerdictCard result={result} />
+                  <>
+                    {/* Main verdict + forensic information */}
+
+                    <VerdictCard result={result} />
+
+                    {/* Explainability / heatmap section */}
+
+                    <ExplainabilityPanel
+                      result={result}
+                      previewUrl={previewUrl}
+                    />
+                  </>
                 )}
               </>
             )}

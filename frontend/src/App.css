@@ -845,3 +845,96 @@ footer {
     text-align: left;
   }
 }
+.explainability-section {
+  margin-top: 28px;
+  padding: 28px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.025);
+}
+
+.explainability-section .result-section-heading {
+  margin-bottom: 22px;
+}
+
+.explainability-section .result-section-heading p {
+  margin-top: 8px;
+  color: #8f96a3;
+  line-height: 1.6;
+}
+
+.explainability-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 20px;
+}
+
+.explainability-card {
+  min-width: 0;
+}
+
+.explainability-label {
+  display: block;
+  margin-bottom: 10px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  color: #8f96a3;
+}
+
+.explainability-image {
+  min-height: 280px;
+  overflow: hidden;
+  border-radius: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: #10131a;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.explainability-image img {
+  width: 100%;
+  height: 100%;
+  min-height: 280px;
+  object-fit: contain;
+  display: block;
+}
+
+.heatmap-placeholder {
+  padding: 32px;
+  text-align: center;
+  color: #8f96a3;
+}
+
+.heatmap-placeholder strong {
+  display: block;
+  margin: 12px 0 8px;
+  color: #e8ebf0;
+}
+
+.heatmap-placeholder p {
+  max-width: 320px;
+  margin: 0 auto;
+  line-height: 1.6;
+  font-size: 0.9rem;
+}
+
+.placeholder-icon {
+  font-size: 2.5rem;
+  color: #6f7785;
+}
+
+.image-placeholder {
+  color: #6f7785;
+}
+
+@media (max-width: 768px) {
+  .explainability-section {
+    padding: 20px;
+  }
+
+  .explainability-grid {
+    grid-template-columns: 1fr;
+  }
+}

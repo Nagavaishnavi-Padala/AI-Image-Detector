@@ -1,45 +1,46 @@
-import { predictImageMock } from "./mockApi";
+import { useState } from "react";
+import { predictImage } from "../services/api";
 
-const API_BASE_URL =
-  import.meta.env.VITE_API_BASE_URL ||
-  "http://localhost:8000";
+export function useImageAnalysis() {
+  const [loading, setLoading] = useState(false);
+  const [result, setResult] = useState(null);
+  const [error, setError] = useState("");
 
-const USE_MOCK_API =
-  import.meta.env.VITE_USE_MOCK_API !== "false";
-
-export async function predictImage(file) {
-  if (USE_MOCK_API) {
-    return predictImageMock(file);
-  }
-
-  const formData = new FormData();
-
-  formData.append("file", file);
-
-  const response = await fetch(
-    `${API_BASE_URL}/predict`,
-    {
-      method: "POST",
-      body: formData,
+  const analyzeImage = async (file) => {
+    if (!file) {
+      setError("Please select an image first.");
+      return;
     }
-  );
 
-  if (!response.ok) {
-    let message =
-      "The image analysis request failed.";
+    setLoading(true);
+    setError("");
+    setResult(null);
 
     try {
-      const errorData = await response.json();
+      const response = await predictImage(file);
+      setResult(response);
+    } catch (error) {
+      console.error("Image analysis error:", error);
 
-      if (errorData.detail) {
-        message = errorData.detail;
-      }
-    } catch {
-      // Keep default error message
+      setError(
+        error.message ||
+          "Unable to analyze the image. Please try again."
+      );
+    } finally {
+      setLoading(false);
     }
+  };
 
-    throw new Error(message);
-  }
+  const resetAnalysis = () => {
+    setResult(null);
+    setError("");
+  };
 
-  return response.json();
+  return {
+    loading,
+    result,
+    error,
+    analyzeImage,
+    resetAnalysis,
+  };
 }
