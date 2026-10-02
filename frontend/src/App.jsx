@@ -7,6 +7,7 @@ import AnalysisLoader from "./components/analysis/AnalysisLoader";
 import VerdictCard from "./components/analysis/VerdictCard";
 import ExplainabilityPanel from "./components/analysis/ExplainabilityPanel";
 import AnalysisHistory from "./components/analysis/AnalysisHistory";
+import AboutSection from "./components/common/AboutSection";
 
 import UploadZone from "./components/upload/UploadZone";
 import ImagePreview from "./components/upload/ImagePreview";
@@ -385,7 +386,9 @@ function App() {
           FOOTER
           ===================================================== */}
 
-      <footer id="about">
+      <AboutSection />
+
+      <footer>
         <p>
           Zero-Shot AI Image Detector · Research Project
         </p>
