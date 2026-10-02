@@ -1326,3 +1326,21 @@ footer p {
     grid-template-columns: 1fr;
   }
 }
+
+.button-spinner {
+  display: inline-block;
+
+  width: 14px;
+  height: 14px;
+
+  margin-right: 8px;
+
+  vertical-align: -2px;
+
+  border: 2px solid rgba(0, 0, 0, 0.2);
+  border-top-color: #0b0d11;
+
+  border-radius: 50%;
+
+  animation: spin 0.7s linear infinite;
+}

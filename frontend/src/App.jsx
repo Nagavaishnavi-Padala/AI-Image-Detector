@@ -99,13 +99,15 @@ function App() {
   // ---------------------------------------------------------
 
   const handleAnalyze = async () => {
-    if (!selectedFile) {
-      return;
-    }
+  if (!selectedFile) {
+    setError("Please select an image first.");
+    return;
+  }
 
-    // Run analysis
-    await analyzeImage(selectedFile);
-  };
+  setError("");
+
+  await analyzeImage(selectedFile);
+};
 
   // ---------------------------------------------------------
   // ADD RESULT TO HISTORY
@@ -275,10 +277,16 @@ function App() {
                   className="analyze-button"
                   onClick={handleAnalyze}
                   disabled={loading}
+                  aria-busy={loading}
                 >
-                  {loading
-                    ? "Analyzing..."
-                    : "Analyze Image"}
+                  {loading ? (
+                    <>
+                      <span className="button-spinner" />
+                      Analyzing Image...
+                    </>
+                  ) : (
+                    "Analyze Image"
+                  )}
                 </button>
 
                 {analysisError && (
