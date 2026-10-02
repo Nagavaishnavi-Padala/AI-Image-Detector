@@ -6,16 +6,42 @@ import { useImageAnalysis } from "./hooks/useImageAnalysis";
 import AnalysisLoader from "./components/analysis/AnalysisLoader";
 import VerdictCard from "./components/analysis/VerdictCard";
 import ExplainabilityPanel from "./components/analysis/ExplainabilityPanel";
+import AnalysisHistory from "./components/analysis/AnalysisHistory";
 
 import UploadZone from "./components/upload/UploadZone";
 import ImagePreview from "./components/upload/ImagePreview";
 
 import { validateImageFile } from "./utils/fileValidation";
 
+const HISTORY_KEY = "ai-image-analysis-history";
+
 function App() {
   const [selectedFile, setSelectedFile] = useState(null);
   const [previewUrl, setPreviewUrl] = useState(null);
   const [error, setError] = useState("");
+
+  const [history, setHistory] = useState(() => {
+    try {
+      const savedHistory = localStorage.getItem(HISTORY_KEY);
+
+      if (!savedHistory) {
+        return [];
+      }
+
+      const parsedHistory = JSON.parse(savedHistory);
+
+      return Array.isArray(parsedHistory)
+        ? parsedHistory
+        : [];
+    } catch (error) {
+      console.error(
+        "Failed to load analysis history:",
+        error
+      );
+
+      return [];
+    }
+  });
 
   const {
     loading,
@@ -26,13 +52,30 @@ function App() {
   } = useImageAnalysis();
 
   // ---------------------------------------------------------
+  // SAVE HISTORY TO LOCAL STORAGE
+  // ---------------------------------------------------------
+
+  useEffect(() => {
+    try {
+      localStorage.setItem(
+        HISTORY_KEY,
+        JSON.stringify(history)
+      );
+    } catch (error) {
+      console.error(
+        "Failed to save analysis history:",
+        error
+      );
+    }
+  }, [history]);
+
+  // ---------------------------------------------------------
   // HANDLE FILE SELECTION
   // ---------------------------------------------------------
 
   const handleFileSelected = (file) => {
     setError("");
 
-    // Validate selected file
     const validation = validateImageFile(file);
 
     if (!validation.valid) {
@@ -42,16 +85,66 @@ function App() {
       return;
     }
 
-    // Store selected file
     setSelectedFile(file);
 
-    // Create preview URL
     const url = URL.createObjectURL(file);
     setPreviewUrl(url);
 
-    // Reset previous analysis
     resetAnalysis();
   };
+
+  // ---------------------------------------------------------
+  // HANDLE IMAGE ANALYSIS
+  // ---------------------------------------------------------
+
+  const handleAnalyze = async () => {
+    if (!selectedFile) {
+      return;
+    }
+
+    // Run analysis
+    await analyzeImage(selectedFile);
+  };
+
+  // ---------------------------------------------------------
+  // ADD RESULT TO HISTORY
+  // ---------------------------------------------------------
+
+  useEffect(() => {
+    if (!result || !selectedFile) {
+      return;
+    }
+
+    const historyItem = {
+      id: `${selectedFile.name}-${selectedFile.size}-${selectedFile.lastModified}`,
+
+      filename: selectedFile.name,
+
+      content_type: selectedFile.type,
+
+      is_ai_generated: result.is_ai_generated,
+
+      ai_probability: result.ai_probability,
+
+      analysis_time: new Date().toLocaleString(),
+    };
+
+    setHistory((previousHistory) => {
+      // Prevent duplicate entries when React re-renders
+      const alreadyExists = previousHistory.some(
+        (item) => item.id === historyItem.id
+      );
+
+      if (alreadyExists) {
+        return previousHistory;
+      }
+
+      return [
+        historyItem,
+        ...previousHistory,
+      ].slice(0, 10);
+    });
+  }, [result, selectedFile]);
 
   // ---------------------------------------------------------
   // REMOVE SELECTED IMAGE
@@ -63,6 +156,16 @@ function App() {
     setError("");
 
     resetAnalysis();
+  };
+
+  // ---------------------------------------------------------
+  // CLEAR HISTORY
+  // ---------------------------------------------------------
+
+  const handleClearHistory = () => {
+    setHistory([]);
+
+    localStorage.removeItem(HISTORY_KEY);
   };
 
   // ---------------------------------------------------------
@@ -98,18 +201,23 @@ function App() {
         </div>
 
         <nav className="nav-links">
-          <a href="#how-it-works">How It Works</a>
-          <a href="#about">About</a>
+          <a href="#how-it-works">
+            How It Works
+          </a>
+
+          <a href="#about">
+            About
+          </a>
         </nav>
       </header>
 
       {/* =====================================================
-          MAIN CONTENT
+          MAIN
           ===================================================== */}
 
       <main>
         {/* ===================================================
-            HERO / ANALYSIS SECTION
+            HERO
             =================================================== */}
 
         <section className="hero">
@@ -146,7 +254,7 @@ function App() {
             )}
 
             {/* =================================================
-                FILE VALIDATION ERROR
+                FILE ERROR
                 ================================================= */}
 
             {error && (
@@ -156,23 +264,21 @@ function App() {
             )}
 
             {/* =================================================
-                ANALYSIS SECTION
+                ANALYSIS
                 ================================================= */}
 
             {selectedFile && (
               <>
-                {/* Analyze button */}
-
                 <button
                   type="button"
                   className="analyze-button"
-                  onClick={() => analyzeImage(selectedFile)}
+                  onClick={handleAnalyze}
                   disabled={loading}
                 >
-                  {loading ? "Analyzing..." : "Analyze Image"}
+                  {loading
+                    ? "Analyzing..."
+                    : "Analyze Image"}
                 </button>
-
-                {/* Backend / analysis error */}
 
                 {analysisError && (
                   <div className="upload-error">
@@ -180,21 +286,11 @@ function App() {
                   </div>
                 )}
 
-                {/* Loading state */}
-
                 {loading && <AnalysisLoader />}
-
-                {/* =================================================
-                    ANALYSIS RESULT
-                    ================================================= */}
 
                 {result && !loading && (
                   <>
-                    {/* Main verdict + forensic information */}
-
                     <VerdictCard result={result} />
-
-                    {/* Explainability / heatmap section */}
 
                     <ExplainabilityPanel
                       result={result}
@@ -206,6 +302,15 @@ function App() {
             )}
           </div>
         </section>
+
+        {/* =====================================================
+            ANALYSIS HISTORY
+            ===================================================== */}
+
+        <AnalysisHistory
+          history={history}
+          onClear={handleClearHistory}
+        />
 
         {/* =====================================================
             HOW IT WORKS
@@ -232,8 +337,6 @@ function App() {
           </div>
 
           <div className="pipeline">
-            {/* Step 1 */}
-
             <div className="pipeline-card">
               <span>01</span>
 
@@ -249,8 +352,6 @@ function App() {
               →
             </div>
 
-            {/* Step 2 */}
-
             <div className="pipeline-card">
               <span>02</span>
 
@@ -265,8 +366,6 @@ function App() {
             <div className="pipeline-arrow">
               →
             </div>
-
-            {/* Step 3 */}
 
             <div className="pipeline-card">
               <span>03</span>
